@@ -2,7 +2,11 @@
 #include "../gameobjects/Boid.h"
 
 Vector2f CohesionRule::computeForce(const std::vector<Boid*>& neighborhood, Boid* boid) {
-  Vector2f cohesionForce;
+  //Bootstrap case
+  if (neighborhood.empty())
+    return Vector2f::zero();
+
+  Vector2f cohesionForce{};
   Vector2f centerOfMass{};
   int numOfBoids{};
   float detectionRadius = boid->getDetectionRadius();
