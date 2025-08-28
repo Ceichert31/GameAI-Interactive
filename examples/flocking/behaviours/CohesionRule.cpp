@@ -22,7 +22,6 @@ Vector2f CohesionRule::computeForce(const std::vector<Boid*>& neighborhood, Boid
       }
 
       centerOfMass = centerOfMass / numOfBoids;
-
   }
 
   /*
