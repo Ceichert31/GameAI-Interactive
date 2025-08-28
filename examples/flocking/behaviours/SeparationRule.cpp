@@ -13,19 +13,28 @@ Vector2f SeparationRule::computeForce(const std::vector<Boid*>& neighborhood, Bo
   Vector2f separatingForce{};
 
   float desiredDistance = desiredMinimalDistance;
+  float separationRange = boid->getDetectionRadius();
 
     //Iterate through neighbors and calculate distance from all
   for (auto neighbor : neighborhood) {
       //Calculate distance between boids
       Vector2f direction = neighbor->getPosition() - boid->getPosition();
+      float distance = direction.getMagnitude();
 
-      //Divide normalized Pa - Pi by magnitude of Pa - Pi
-      separatingForce += direction.normalized() / direction.getMagnitude();
+    //Divide normalized direction by magnitude of direction (distance)
+      if (distance > 0 && distance < separationRange) {
+        separatingForce += direction.normalized() / distance;
+      }
+      /*else if (distance == 0 || distance > separationRange) {
+        separatingForce = Vector2f::zero();
+      }*/
+
     }
 
-  //Eventually clamp here
-  separatingForce = Vector2f::normalized(separatingForce);
-
+  //Clamp maximum magnitude
+  if (separatingForce.getMagnitude() > desiredDistance) {
+    separatingForce = separatingForce.normalized() * desiredDistance;
+  }
   return separatingForce;
 }
 
