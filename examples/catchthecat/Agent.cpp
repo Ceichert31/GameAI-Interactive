@@ -18,9 +18,13 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
   while (!frontier.empty()) {
     // get the current from frontier
+    auto currentPoint = frontier.front();
     // remove the current from frontierset
+    frontier.pop();
     // mark current as visited
+    visited[currentPoint] = true;
     // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
+
     // iterate over the neighs:
     // for every neighbor set the cameFrom
     // enqueue the neighbors to frontier and frontierset
