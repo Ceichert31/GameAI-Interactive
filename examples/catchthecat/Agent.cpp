@@ -117,6 +117,10 @@ bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bo
     return false;
   }
 
+  if (w->getContent(current)) {
+    return false;
+  }
+
   //Check if visited
   if (visited.contains(current)) {
     return false;
