@@ -2,22 +2,13 @@
 #include "World.h"
 
 Point2D Catcher::Move(World* world) {
-  auto side = world->getWorldSideSize() / 2;
-  for (;;) {
-    Point2D p = {Random::Range(-side, side), Random::Range(-side, side)};
+  auto path = generatePath(world);
+  auto distance = path.size();
 
-    auto path = generatePath(world);
-
-    if (path.empty()) {
-      return Point2D();
-    }
-
-    std::cout << path.size() << "\n";
-    return path[path.size()-1];
-
-    auto cat = world->getCat();
-    if (cat.x != p.x && cat.y != p.y && !world->getContent(p)) return p;
-
-
+  if (path.empty()) {
+    return Point2D();
   }
+
+  std::cout << distance << "\n";
+  return path[distance / 2];
 }
