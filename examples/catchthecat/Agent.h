@@ -3,6 +3,7 @@
 #include "math/Point2D.h"
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 
 class World;
 
@@ -14,9 +15,9 @@ public:
 
   std::vector<Point2D> generatePath(World* w);
 
-  std::vector<Point2D> getVisitableNeighbors(World* world, Point2D current, std::unordered_map<Point2D, bool> visited);
+  std::vector<Point2D> getVisitableNeighbors(World* world, Point2D current, std::unordered_map<Point2D, bool> visited, std::unordered_set<Point2D> frontierSet);
 
-  bool isNeighborValid(World* w, Point2D current, std::unordered_map<Point2D, bool> visited);
+  bool isNeighborValid(World* w, Point2D current, std::unordered_map<Point2D, bool> visited,  std::unordered_set<Point2D> frontierSet);
 };
 
 #endif  // AGENT_H

@@ -1,4 +1,6 @@
 #include "Agent.h"
+
+#include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
 #include <queue>
@@ -23,8 +25,21 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     frontier.pop();
     // mark current as visited
     visited[currentPoint] = true;
+
+    //If algorithm hits border, set border exit
+    if (w->catWinsOnSpace(currentPoint)) {
+      borderExit = currentPoint;
+      break;
+    }
+
     // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
-    auto neighbors = getVisitableNeighbors(w, currentPoint, visited);
+    auto neighbors = getVisitableNeighbors(w, currentPoint, visited, frontierSet);
+
+    //If there are no valid neighbors, continue
+    if (neighbors.empty()) {
+      continue;
+    }
+
     // iterate over the neighs:
     for (auto neighbor : neighbors) {
       // for every neighbor set the cameFrom
@@ -39,13 +54,29 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
   // if the border is not infinity, build the path from border to the cat using the camefrom map
   if (borderExit != Point2D::INFINITE) {
+    vector<Point2D> path;
+
+    auto start = w->getCat();
+    auto current = cameFrom[borderExit];
+
+    //Push starting points
+    path.push_back(borderExit);
+    path.push_back(current);
+
+    while (current != start) {
+      path.push_back(cameFrom[current]);
+      current = cameFrom[current];
+    }
+    std::reverse(path.begin(), path.end());
+
+    return path;
   }
 
   // if there isnt a reachable border, just return empty vector
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
   return vector<Point2D>();
 }
-std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current, unordered_map<Point2D, bool> visited) {
+std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current, unordered_map<Point2D, bool> visited,  unordered_set<Point2D> frontierSet) {
   std::vector<Point2D> neighbors;
 
   auto east = world->E(current);
@@ -54,44 +85,47 @@ std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current,
   auto northWest = world->NW(current);
   auto southEast = world->SE(current);
   auto southWest = world->SW(current);
-  if (isNeighborValid(world, east, visited)) {
+  if (isNeighborValid(world, east, visited, frontierSet)) {
     neighbors.push_back(east);
   }
-  if (isNeighborValid(world, west, visited)) {
+  if (isNeighborValid(world, west, visited, frontierSet)) {
     neighbors.push_back(west);
   }
-  if (isNeighborValid(world, northEast, visited)) {
+  if (isNeighborValid(world, northEast, visited, frontierSet)) {
     neighbors.push_back(northEast);
   }
-  if (isNeighborValid(world, northWest, visited)) {
+  if (isNeighborValid(world, northWest, visited, frontierSet)) {
     neighbors.push_back(northWest);
   }
-  if (isNeighborValid(world, southEast, visited)) {
+  if (isNeighborValid(world, southEast, visited, frontierSet)) {
     neighbors.push_back(southEast);
   }
-  if (isNeighborValid(world, southWest, visited)) {
+  if (isNeighborValid(world, southWest, visited, frontierSet)) {
     neighbors.push_back(southWest);
   }
 
   return neighbors;
 }
-bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bool> visited) {
+bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bool> visited, unordered_set<Point2D> frontierSet) {
+  //Check if cat
+  if (w->getCat() == current) {
+    return false;
+  }
+
   //Check if in bounds
   if (!w->isValidPosition(current)) {
     return false;
   }
 
   //Check if visited
-  if (!visited.contains(current)) {
+  if (visited.contains(current)) {
     return false;
   }
 
-  //Check if cat
-  if (!w->catCanMoveToPosition(current)) {
+  //Check if in queue
+  if (frontierSet.contains(current)) {
     return false;
   }
-
-  //Check if blocked
 
   return true;
 }
