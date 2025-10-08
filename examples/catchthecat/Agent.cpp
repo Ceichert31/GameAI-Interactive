@@ -9,15 +9,15 @@ using namespace std;
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
   unordered_map<Point2D, float> costSoFar;
-  priority_queue<Point2D, vector<Point2D>, greater<Point2D>> frontier;                   // to store next ones to visit
+  priority_queue<WeightedPoint2D, vector<WeightedPoint2D>, greater<WeightedPoint2D>> frontier;                   // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
 
   // bootstrap state
-  auto catPos = w->getCat();
+  WeightedPoint2D catPos = WeightedPoint2D(w->getCat(), 1);
   frontier.push(catPos);
-  costSoFar[catPos] = 0;
-  frontierSet.insert(catPos);
+  costSoFar[catPos.point] = 0;
+  frontierSet.insert(catPos.point);
   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
 
 
@@ -27,19 +27,16 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     // remove the current from frontierset
     frontier.pop();
     // mark current as visited
-    visited[currentPoint] = true;
-
-    //Calculate new cost (So far just add one because every tile costs 1)
-    float newCost = costSoFar[currentPoint] + 1;
+    visited[currentPoint.point] = true;
 
     //If algorithm hits border, set border exit
-    if (w->catWinsOnSpace(currentPoint)) {
-      borderExit = currentPoint;
+    if (w->catWinsOnSpace(currentPoint.point)) {
+      borderExit = currentPoint.point;
       break;
     }
 
     // getVisitableNeightbors(world, current) returns a vector of neighbors that are not visited, not cat, not block, not in the queue
-    auto neighbors = getVisitableNeighbors(w, currentPoint, visited, frontierSet);
+    auto neighbors = getVisitableNeighbors(w, currentPoint.point, visited, frontierSet);
 
     //If there are no valid neighbors, continue
     if (neighbors.empty()) {
@@ -48,10 +45,16 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 
     // iterate over the neighs:
     for (auto neighbor : neighbors) {
+      //Calculate new cost (So far just add one because every tile costs 1)
+      float newCost = costSoFar[currentPoint.point] + 1;
+
+      costSoFar[neighbor] = newCost;
+      float priority = newCost + w->heuristic(currentPoint.point);
+
       // for every neighbor set the cameFrom
-      cameFrom[neighbor] = currentPoint;
+      cameFrom[neighbor] = currentPoint.point;
       // enqueue the neighbors to frontier and frontierset
-      frontier.push(neighbor);
+      frontier.push(WeightedPoint2D(neighbor, priority));
       frontierSet.insert(neighbor);
     }
 
@@ -138,9 +141,5 @@ bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bo
   }
 
   return true;
-}
-
-float Agent::heuristic(Point2D a, Point2D b) {
-  return abs(a.x - b.x) + abs(a.y - b.y);
 }
 

@@ -108,6 +108,8 @@ public:
     n.push_back(SE(point));
     return n;
   }
+
+  float heuristic(Point2D a);
 };
 
 #endif  // WORLD_H

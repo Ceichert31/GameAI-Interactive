@@ -19,7 +19,30 @@ public:
 
   bool isNeighborValid(World* w, Point2D current, std::unordered_map<Point2D, bool> visited,  std::unordered_set<Point2D> frontierSet);
 
-  float heuristic(Point2D a, Point2D b);
+  struct WeightedPoint2D {
+    Point2D point{};
+    float weight{};
+
+    WeightedPoint2D() {
+      point = Point2D();
+      weight = 0;
+    }
+
+    WeightedPoint2D(Point2D p, float w) {
+      point = p;
+      weight = w;
+    }
+
+    bool operator>(WeightedPoint2D const a) const {
+      return weight > a.weight;
+    }
+    bool operator<(WeightedPoint2D const a) const {
+      return weight < a.weight;
+    }
+    bool operator==(WeightedPoint2D const a) const {
+      return point == a.point && weight == a.weight;
+    }
+  };
 };
 
 #endif  // AGENT_H
