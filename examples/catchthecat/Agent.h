@@ -15,6 +15,8 @@ public:
   std::vector<Point2D> generatePath(World* w);
 
   std::vector<Point2D> getVisitableNeighbors(World* world, Point2D current, std::unordered_map<Point2D, bool> visited);
+
+  bool isNeighborValid(World* w, Point2D current, std::unordered_map<Point2D, bool> visited);
 };
 
 #endif  // AGENT_H

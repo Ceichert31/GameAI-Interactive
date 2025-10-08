@@ -48,17 +48,51 @@ std::vector<Point2D> Agent::generatePath(World* w) {
 std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current, unordered_map<Point2D, bool> visited) {
   std::vector<Point2D> neighbors;
 
+  auto east = world->E(current);
+  auto west = world->W(current);
+  auto northEast = world->NE(current);
+  auto northWest = world->NW(current);
+  auto southEast = world->SE(current);
+  auto southWest = world->SW(current);
+  if (isNeighborValid(world, east, visited)) {
+    neighbors.push_back(east);
+  }
+  if (isNeighborValid(world, west, visited)) {
+    neighbors.push_back(west);
+  }
+  if (isNeighborValid(world, northEast, visited)) {
+    neighbors.push_back(northEast);
+  }
+  if (isNeighborValid(world, northWest, visited)) {
+    neighbors.push_back(northWest);
+  }
+  if (isNeighborValid(world, southEast, visited)) {
+    neighbors.push_back(southEast);
+  }
+  if (isNeighborValid(world, southWest, visited)) {
+    neighbors.push_back(southWest);
+  }
+
+  return neighbors;
+}
+bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bool> visited) {
   //Check if in bounds
-  if (!world->isValidPosition(current)) {
-    return neighbors;
+  if (!w->isValidPosition(current)) {
+    return false;
   }
 
   //Check if visited
+  if (!visited.contains(current)) {
+    return false;
+  }
 
   //Check if cat
-  if (!world->catcherCanMoveToPosition(current)) {
-    return neighbors;
+  if (!w->catCanMoveToPosition(current)) {
+    return false;
   }
 
   //Check if blocked
+
+  return true;
 }
+
