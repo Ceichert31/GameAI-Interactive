@@ -8,7 +8,7 @@
 using namespace std;
 std::vector<Point2D> Agent::generatePath(World* w) {
   unordered_map<Point2D, Point2D> cameFrom;  // to build the flowfield and build the path
-  unordered_map<Point2D, int> costSoFar;
+  unordered_map<Point2D, float> costSoFar;
   priority_queue<Point2D, vector<Point2D>, greater<Point2D>> frontier;                   // to store next ones to visit
   unordered_set<Point2D> frontierSet;        // OPTIMIZATION to check faster if a point is in the queue
   unordered_map<Point2D, bool> visited;      // use .at() to get data, if the element dont exist [] will give you wrong results
@@ -16,16 +16,21 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   // bootstrap state
   auto catPos = w->getCat();
   frontier.push(catPos);
+  costSoFar[catPos] = 0;
   frontierSet.insert(catPos);
   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
 
+
   while (!frontier.empty()) {
     // get the current from frontier
-    auto currentPoint = frontier.front();
+    auto currentPoint = frontier.top();
     // remove the current from frontierset
     frontier.pop();
     // mark current as visited
     visited[currentPoint] = true;
+
+    //Calculate new cost (So far just add one because every tile costs 1)
+    float newCost = costSoFar[currentPoint] + 1;
 
     //If algorithm hits border, set border exit
     if (w->catWinsOnSpace(currentPoint)) {
@@ -133,5 +138,9 @@ bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bo
   }
 
   return true;
+}
+
+float Agent::heuristic(Point2D a, Point2D b) {
+  return abs(a.x - b.x) + abs(a.y - b.y);
 }
 

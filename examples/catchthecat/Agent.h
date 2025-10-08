@@ -18,6 +18,8 @@ public:
   std::vector<Point2D> getVisitableNeighbors(World* world, Point2D current, std::unordered_map<Point2D, bool> visited, std::unordered_set<Point2D> frontierSet);
 
   bool isNeighborValid(World* w, Point2D current, std::unordered_map<Point2D, bool> visited,  std::unordered_set<Point2D> frontierSet);
+
+  float heuristic(Point2D a, Point2D b);
 };
 
 #endif  // AGENT_H
