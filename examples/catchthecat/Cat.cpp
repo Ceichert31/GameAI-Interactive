@@ -8,6 +8,5 @@ Point2D Cat::Move(World* world) {
   if (path.size() < 1) {
     return {};
   }
-
   return path[0];
 }

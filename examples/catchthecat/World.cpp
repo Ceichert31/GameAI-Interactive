@@ -155,6 +155,7 @@ void World::OnGui(ImGuiContext* context) {
   if (ImGui::Button("Pause")) {
     isSimulating = false;
   }
+  ImGui::SliderInt("Catcher Distance Threshold", &catcher->mBorderThreshold, 1, 5);
   ImGui::End();
 
   if ((catcherWon || catWon)) {

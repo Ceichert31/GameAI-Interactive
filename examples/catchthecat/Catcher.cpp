@@ -10,7 +10,7 @@ Point2D Catcher::Move(World* world) {
   }
 
   std::cout << distance << "\n";
-  if (distance > 3)
+  if (distance > mBorderThreshold)
   {
     //If great distance, get average to block
     return path[distance / 2];
