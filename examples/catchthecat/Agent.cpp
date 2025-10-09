@@ -68,14 +68,10 @@ std::vector<Point2D> Agent::generatePath(World* w) {
     vector<Point2D> path;
 
     auto start = w->getCat();
-    auto current = cameFrom[borderExit];
-
-    //Push starting points
-    path.push_back(borderExit);
-    path.push_back(current);
+    auto current = borderExit;
 
     while (current != start) {
-      path.push_back(cameFrom[current]);
+      path.push_back(current);
       current = cameFrom[current];
     }
     std::reverse(path.begin(), path.end());
@@ -87,7 +83,7 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   // if your vector is filled from the border to the cat, the first element is the catcher move, and the last element is the cat move
   return vector<Point2D>();
 }
-std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current, unordered_map<Point2D, bool> visited,  unordered_set<Point2D> frontierSet) {
+std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current, const std::unordered_map<Point2D, bool>& visited, const std::unordered_set<Point2D>& frontierSet) {
   std::vector<Point2D> neighbors;
 
   auto east = world->E(current);
@@ -117,7 +113,7 @@ std::vector<Point2D> Agent::getVisitableNeighbors(World* world, Point2D current,
 
   return neighbors;
 }
-bool Agent::isNeighborValid(World* w, Point2D current, unordered_map<Point2D, bool> visited, unordered_set<Point2D> frontierSet) {
+bool Agent::isNeighborValid(World* w, Point2D current, const std::unordered_map<Point2D, bool>& visited, const std::unordered_set<Point2D>& frontierSet) {
   //Check if cat
   if (w->getCat() == current) {
     return false;

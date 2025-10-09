@@ -5,14 +5,16 @@ Point2D Catcher::Move(World* world) {
   auto path = generatePath(world);
   int distance = path.size();
 
-  if (path.size() < 2) {
+  if (path.size() < 1) {
     return Point2D();
   }
 
   std::cout << distance << "\n";
-  if (distance < world->getWorldSideSize() / 4)
+  if (distance > 3)
   {
-    return path[distance - 1];
+    //If great distance, get average to block
+    return path[distance / 2];
   }
-  return path[distance / 4];
+  //Otherwise get border to block
+  return path[distance - 1];
 }
