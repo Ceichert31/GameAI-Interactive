@@ -3,12 +3,16 @@
 
 Point2D Catcher::Move(World* world) {
   auto path = generatePath(world);
-  auto distance = path.size();
+  int distance = path.size();
 
-  if (path.empty()) {
+  if (path.size() < 2) {
     return Point2D();
   }
 
   std::cout << distance << "\n";
-  return path[distance / 2];
+  if (distance < world->getWorldSideSize() / 4)
+  {
+    return path[distance - 1];
+  }
+  return path[distance / 4];
 }

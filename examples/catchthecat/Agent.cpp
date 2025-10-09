@@ -20,7 +20,6 @@ std::vector<Point2D> Agent::generatePath(World* w) {
   frontierSet.insert(catPos.point);
   Point2D borderExit = Point2D::INFINITE;  // if at the end of the loop we dont find a border, we have to return random points
 
-
   while (!frontier.empty()) {
     // get the current from frontier
     auto currentPoint = frontier.top();
@@ -48,17 +47,20 @@ std::vector<Point2D> Agent::generatePath(World* w) {
       //Calculate new cost (So far just add one because every tile costs 1)
       float newCost = costSoFar[currentPoint.point] + 1;
 
-      costSoFar[neighbor] = newCost;
-      float priority = newCost + w->heuristic(currentPoint.point);
+      //Check if the new cost is less expensive than the old cost
+      if (!frontierSet.contains(neighbor) || costSoFar[neighbor] > newCost)
+      {
+        costSoFar[neighbor] = newCost;
 
-      // for every neighbor set the cameFrom
-      cameFrom[neighbor] = currentPoint.point;
-      // enqueue the neighbors to frontier and frontierset
-      frontier.push(WeightedPoint2D(neighbor, priority));
-      frontierSet.insert(neighbor);
+        float priority = newCost + w->heuristic(neighbor);
+
+        // for every neighbor set the cameFrom
+        cameFrom[neighbor] = currentPoint.point;
+        // enqueue the neighbors to frontier and frontierset
+        frontier.push(WeightedPoint2D(neighbor, priority));
+        frontierSet.insert(neighbor);
+      }
     }
-
-    // do this up to find a visitable border and break the loop
   }
 
   // if the border is not infinity, build the path from border to the cat using the camefrom map

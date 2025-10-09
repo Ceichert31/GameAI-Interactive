@@ -5,7 +5,7 @@
 Point2D Cat::Move(World* world) {
   auto path = generatePath(world);
 
-  if (path.empty()) {
+  if (path.size() < 2) {
     return {};
   }
 
